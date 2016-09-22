@@ -1,0 +1,191 @@
+<html>
+    <head>
+        <title>My Face 2.0</title>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <!-- Latest compiled and minified JavaScript -->
+        <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="/static/index.css" type="text/css">
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header" id = "my-navbar-header">
+                    <a class="navbar-brand" href="/">My Face 2.0</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li><a href="/wall">{{session['first_name']}}'s Wall</a></li>
+                    <li class="active"><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/profile">Profile</a></li>
+                    <li><a href="/message">Messages</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right" id = "my-navbar-right">
+                    <li><a href="/profile">Welcome {{session['first_name']}} {{session['last_name']}}</a></li>
+                    <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> &nbsp Log Out</a></li>
+                </ul>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="table-responsive">
+                <p>
+                    {{get_flashed_messages(category_filter=["success"])[0]}}
+                    {{get_flashed_messages(category_filter=["ignored"])[0]}}
+                </p>
+                <h2>Friends:</h2>
+                {% if not friends and not requesting_friends: %}
+                    <h5>You have no friends! Go and add some from below!</h5>
+                {% else: %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Name
+                                </th>
+                                <th>
+                                    Email
+                                </th>
+                                <th>
+                                    Friend Since
+                                </th>
+                                <th>
+                                    Profile
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+                                <th>
+                                    Message
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for friend in requesting_friends %}
+                            <tr>
+                                <td>
+                                    {{friend['first_name']}} {{friend['last_name']}}
+                                </td>
+                                <td>
+                                    {{friend['email']}}
+                                </td>
+                                <td>
+                                    {{friend['friend_created_at']}}
+                                </td>
+                                <td>
+                                    <a href="/profile/{{friend['id']}}">Profile Page</a>
+                                </td>
+                                <td>
+                                    <a href="/acceptfriend/{{friend['id']}}">Add as Friend!</a> or <a href="/ignore/{{friend['id']}}">Ignore!</a>
+                                </td>
+                                <td>
+                                    <a href="/message/{{friend['id']}}">Message</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% for friend in friends %}
+                            <tr>
+                                <td>
+                                    {{friend['first_name']}} {{friend['last_name']}}
+                                </td>
+                                <td>
+                                    {{friend['email']}}
+                                </td>
+                                <td>
+                                    {{friend['friend_created_at']}}
+                                </td>
+                                <td>
+                                    <a href="/profile/{{friend['id']}}">Profile Page</a>
+                                </td>
+                                <td>
+                                    <a href="/unfriend/{{friend['id']}}">UnFriend!</a>
+                                </td>
+                                <td>
+                                    <a href="/message/{{friend['id']}}">Message</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+            <p>
+                &nbsp
+            </p>
+            <div class="table-responsive">
+                <h2>All Users:</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Email
+                            </th>
+                            <th>
+                                User Since
+                            </th>
+                            <th>
+                                # of friends
+                            </th>
+                            <th>
+                                Profile
+                            </th>
+                            <th>
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in pending_friends %}
+                            <tr>
+                                <td>
+                                    {{user['first_name']}} {{user['last_name']}}
+                                </td>
+                                <td>
+                                    {{user['email']}}
+                                </td>
+                                <td>
+                                    {{user['user_created_at']}}
+                                </td>
+                                <td>
+                                    {{user['num_friends']}}
+                                </td>
+                                <td>
+                                    <a href="/profile/{{user['id']}}">Profile Page</a>
+                                </td>
+                                <td>
+                                    <a href="/cancelrequest/{{user['id']}}">Cancel Request!</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        {% for user in not_friends %}
+                            <tr>
+                                <td>
+                                    {{user['first_name']}} {{user['last_name']}}
+                                </td>
+                                <td>
+                                    {{user['email']}}
+                                </td>
+                                <td>
+                                    {{user['created_at']}}
+                                </td>
+                                <td>
+                                    {{user['num_friends']}}
+                                </td>
+                                <td>
+                                    <a href="/profile/{{user['id']}}">Profile Page</a>
+                                </td>
+                                <td>
+                                    <a href="/requestfriend/{{user['id']}}">Request as Friend!</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

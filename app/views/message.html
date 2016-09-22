@@ -1,0 +1,223 @@
+<html>
+    <head>
+        <title>My Face 2.0</title>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <!-- Latest compiled and minified JavaScript -->
+        <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="/static/index.css" type="text/css">
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip({
+                    animation: true
+                });
+            });
+            function timeStampGen(tempUpdated){
+                if ( Date.parse(tempUpdated) > Date.now() - 1000 * 3600 * 24 ){
+                    var min = String(Math.floor(Date.parse(tempUpdated)/1000/60)%60)
+                    newMin = ""
+                    if (min.length == 1){
+                        newMin = "0" + min
+                    }
+                    else {
+                        newMin = min
+                    }
+                    var hour = Math.floor(Date.parse(tempUpdated)/1000/60/60)%24
+                    var halfDay = Math.floor(hour/12)
+                    if (halfDay == 0){
+                        tempUpdated = String(hour) + ":" + newMin + " AM"
+                    }
+                    else {
+                        tempUpdated = String(hour - 12) + ":" + newMin + " PM"
+                    }
+                }
+                else if (Date.parse(tempUpdated) > Date.now() - 1000 * 3600 * 24 * 7) {
+                    tempUpdated = tempUpdated.split(",")[0].split(" ")
+                }
+                else if (Date.parse(tempUpdated) > Date.now() - 1000 * 3600 * 24 * 365) {
+                    tempUpdated = String(tempUpdated.split(",")[1].split(" ")[2]) + " " + String(tempUpdated.split(",")[1].split(" ")[1])
+                }
+                else {
+                    tempUpdated = String(tempUpdated.split(",")[1].split(" ")[2]) + " " + String(tempUpdated.split(",")[1].split(" ")[1]) + ", " + String(tempUpdated.split(",")[1].split(" ")[3])
+                }
+                return tempUpdated
+            }
+            $.get('/grabMessages/{{user_id}}', function (messages) {
+                var messageStr = "";
+                for(var i = 0; i < messages.messages.length; i++) {
+                    messageStr += '<div class="row">';
+                    timeStamp = timeStampGen(messages.messages[i].created_at)
+                    if (messages.messages[i].id == {{session['user']}}){
+                        messageStr += '<div class="col-xs-1 right-message"><p class="bold">' + messages.messages[i].first_name.slice(0,3)
+                        messageStr += '</p></div><div class="col-xs-6 left-message"><p data-toggle="tooltip" title="' + timeStamp + '" data-placement="top">'
+                        messageStr += messages.messages[i].message + '</p></div>'
+                    }
+                    else {
+                        messageStr += '<div class="col-xs-5"></div><div class="col-xs-6 right-message"><p data-toggle="tooltip" title="' + timeStamp + '" data-placement="top">'
+                        messageStr += messages.messages[i].message + '</p></div>'
+                        messageStr += '<div class="col-xs-1 left-message"><p class="bold">' + messages.messages[i].first_name.slice(0,3) + '</p></div>'
+                    }
+                    messageStr +='</div>'
+                }
+                $('#chatbox').html(messageStr);
+            }, 'json');
+        </script>
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header" id = "my-navbar-header">
+                    <a class="navbar-brand" href="/">My Face 2.0</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li><a href="/wall">{{session['first_name']}}'s Wall</a></li>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/profile">Profile</a></li>
+                    <li class="active"><a href="/message">Messages</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right" id = "my-navbar-right">
+                    <li><a href="/profile">Welcome {{session['first_name']}} {{session['last_name']}}</a></li>
+                    <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> &nbsp Log Out</a></li>
+                </ul>
+            </div>
+        </nav>
+        </div>
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-9">
+            <div class="col-md-3">
+                <form id="search" action="/search" method="post">
+                    <div class="form-group">
+                        <div id="scrollable-dropdown-menu">
+                            <input type="text" class="form-control" id="searchBar" autocomplete="off" placeholder="Search for people">
+                        </div>
+                    </div>
+                    <script type="text/javascript">
+                        document.getElementById("searchBar").addEventListener('keypress', function (e) {
+                            var key = e.which || e.keyCode;
+                            if (key === 13) { // 13 is enter
+                                document.getElementById("search").submit()
+                            }
+                        });
+                    </script>
+                </form>
+                <div style="height: 1000px" id="usersMessaged">
+                    {% for user in users%}
+                        <a href="/message/{{user['id']}}" class="messagedUsers">
+                            <div>
+                                <h3>
+                                    {{user['friend_first_name']}} {{user['friend_last_name']}}
+                                </h3>
+                                <p>
+                                    {{user['message'][0:100]}}
+                                </p>
+                                <p>
+                                    <span>Posted at: {{user['created_at'].strftime('%b %d, %Y %l:%M%p')}}</span>
+                                </p>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="row">
+                    <h3 class = "text-center">{{user[0]['first_name']}} {{user[0]['last_name']}}</h3>
+                </div>
+                <div class="row">
+                    <p>
+                        &nbsp
+                    </p>
+                </div>
+                <div style="height: 1000px; width: 1000px" id="chatbox_wrapper">
+                    <div style="max-height: 1000px" id="chatbox">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- action='/message/{{user_id}}/send' -->
+                        <form id="message"  method="post">
+                            <div class="form-group">
+                                <textarea id ="messageBox" class="form-control" name="message" rows="1" placeholder="Send {{user[0]['first_name']}} a message..." autofocus></textarea>
+                            </div>
+                            <script type="text/javascript">
+                                document.getElementById("messageBox").addEventListener('keypress', function (e) {
+                                    var key = e.which || e.keyCode;
+                                    if (key === 13) { // 13 is enter
+                                        $.post('/message/{{user_id}}/send', $('#message').serialize(),
+                                        function(data, status){
+                                            if (status == "success"){
+                                                // $('#messageArea').append("<p><b>Author:<b> blah blah.</p>");
+                                                document.getElementById('messageBox').value = "";
+                                            } else {3
+                                                alert("Lost connection, please reload")
+                                            }
+                                        });
+                                    }
+                                });
+                            </script>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            window.onresize = displayWindowSize;
+            window.onload = displayWindowSize;
+            function displayWindowSize() {
+                screenWidth = window.innerWidth;
+                screenHeight = window.innerHeight;
+                document.getElementById("usersMessaged").style.height = String(screenHeight - 140) + "px";
+                document.getElementById("chatbox").style['max-height'] = String(screenHeight - 220) + "px";
+                document.getElementById("chatbox_wrapper").style.height = String(document.getElementById("message").offsetWidth) + "px";
+                document.getElementById("chatbox_wrapper").style.height = String(screenHeight - 220) + "px";
+                updateScroll()
+            };
+            var scrolled = false;
+            function updateScroll(){
+                if(!scrolled){
+                    var element = document.getElementById("chatbox");
+                    element.scrollTop = element.scrollHeight;
+                }
+            }
+            $("#usersMessaged").on('scroll', function(){
+                scrolled=true;
+            });
+            var substringMatcher = function(strs) {
+                return function findMatches(q, cb) {
+                    var matches, substringRegex;
+
+                    // an array that will be populated with substring matches
+                    matches = [];
+
+                    // regex used to determine if a string contains the substring `q`
+                    substrRegex = new RegExp(q, 'i');
+
+                    // iterate through the pool of strings and for any string that
+                    // contains the substring `q`, add it to the `matches` array
+                    $.each(strs, function(i, str) {
+                        if (substrRegex.test(str)) {
+                            matches.push(str);
+                        }
+                    });
+
+                    cb(matches);
+                };
+            };
+
+            var states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
+            'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
+            'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
+            'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
+            'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
+            'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
+            'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
+            'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+            'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'];
+
+
+        </script>
+    </body>
+</html>

@@ -7,9 +7,9 @@ from flask import Flask
 import os
 from app.config import routes
 
-from system.init.configuration import initialize_config
-from system.init.database import initialize_db
-from system.init.routes import initialize_routes
+# from system.init.configuration import initialize_config
+# from system.init.database import initialize_db
+# from system.init.routes import initialize_routes
 
 
 def initialize_app():
@@ -19,8 +19,10 @@ def initialize_app():
     static_folder = os.path.join(instance_path, 'app/static')
     app = Flask('app', static_folder=static_folder, template_folder=template_folder, instance_path=instance_path)
 
-    initialize_config(app)
-    initialize_db(app)
-    initialize_routes(app)
+    # initialize_config(app)
+    # initialize_db(app)
+    # initialize_routes(app)
 
     return app
+
+app = initialize_app()

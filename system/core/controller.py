@@ -28,6 +28,7 @@ class Controller(View):
         self._action = action
         self._app = current_app
         self.models = {}
+        # self.socketio = SocketIO(current_app)
 
     def dispatch_request(self, *args, **kwargs):
         action = getattr(self, self._action, None)

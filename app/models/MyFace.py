@@ -1,6 +1,8 @@
 import re
 from system.core.model import Model
 from system.core.controller import *
+
+
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 lowercase = re.compile("[a-z]+")
 uppercase = re.compile("[A-Z]+")
@@ -112,7 +114,7 @@ class MyFace(Model):
         flash(registration['first_name'] + " " + registration['last_name'] + " has been registered!","sucess")
         return self.db.query_db(query, data)
 
-    def numFriends(self, num_friends, id = session['user']):
+    def numFriends(self, num_friends, id):
         query = "UPDATE users SET num_friends = :num_friends WHERE id = :id"
         data = {'num_friends': num_friends, 'id': id}
         return self.db.query_db(query, data)

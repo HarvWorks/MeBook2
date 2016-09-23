@@ -1,18 +1,28 @@
 from system.core.controller import *
 import datetime
 from flask_socketio import SocketIO, join_room, leave_room
-if __name__ == '__main__':
-    socketio.run(app)
+from system import socketio
+#
+
+#
+# import sys
+# sys.path.insert(0, '/UserDashboard')
+# from manage import socketio
+
+
 class MyFaces(Controller):
     def __init__(self, action):
         super(MyFaces, self).__init__(action)
         self.load_model('MyFace')
-        self.load_model('SocketIO')
 
     def index(self):
         if "user" in session:
             return redirect('/wall')
         return self.load_view('index.html')
+
+    @socketio.on('message')
+    def handle_message(message):
+        print('received message: ' + message)
 
     def register(self):
         if "user" in session:
@@ -96,7 +106,7 @@ class MyFaces(Controller):
         if not "user" in session:
             return redirect('/login')
         friends = self.models['MyFace'].selectFriends(session['user'])
-        self.models['MyFace'].numFriends(len(friends))
+        self.models['MyFace'].numFriends(len(friends), session['user'])
         not_friends = self.models['MyFace'].selectNotFriends()
         pending_friends = self.models['MyFace'].selectPendingFriends(session['user'])
         requesting_friends = self.models['MyFace'].selectRequestingFriends(session['user'])

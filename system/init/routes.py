@@ -51,4 +51,3 @@ def _controller_auto_router(app, controller_name, routed_methods):
             route += '/'+method if method != 'index' else ''
             route += '/'+parameters if len(parameters) > 1 else ''
             _set_route(app, controller_name+'#'+method, route, controller, method, methods=list(_verbs))
-

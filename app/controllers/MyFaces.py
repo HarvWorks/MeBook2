@@ -1,8 +1,8 @@
 from system.core.controller import *
 import datetime
-from flask_socketio import SocketIO, join_room, leave_room
+from flask_socketio import SocketIO, join_room, leave_room, emit, send
 from system import socketio
-#
+import time
 
 #
 # import sys
@@ -19,10 +19,6 @@ class MyFaces(Controller):
         if "user" in session:
             return redirect('/wall')
         return self.load_view('index.html')
-
-    @socketio.on('message')
-    def handle_message(message):
-        print('received message: ' + message)
 
     def register(self):
         if "user" in session:
@@ -149,6 +145,12 @@ class MyFaces(Controller):
         messages = self.models['MyFace'].privateMessages(session['user'], user_id)
         session['currentTimeStamp'] = messages[-1]
         return jsonify(messages = messages)
+
+    @socketio.on('chat_message')
+    def chat_message_send(message):
+        if not message['message'] == "":
+            message['created_at'] = int(time.time())
+            emit('chat_message', message, broadcast=True)
 
     def userMessageSend(self, user_id):
         if not "user" in session:

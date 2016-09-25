@@ -79,12 +79,12 @@ class MyFace(Model):
         return usersMessage
 
     def privateMessages(self, user_id, friend_id):
-        query = "SELECT private_messages.message, private_messages.created_at, users.id, users.first_name, users.last_name FROM private_messages left join users on users.id = user_id where user_id = :user_id and friend_id = :friend_id or user_id = :friend_id and friend_id = :user_id ORDER BY created_at ASC LIMIT 50"
+        query = "SELECT private_messages.message, UNIX_TIMESTAMP(private_messages.created_at) as created_at, users.id, users.first_name, users.last_name FROM private_messages left join users on users.id = user_id where user_id = :user_id and friend_id = :friend_id or user_id = :friend_id and friend_id = :user_id ORDER BY created_at ASC LIMIT 50"
         data = {"user_id": user_id, "friend_id": friend_id}
         return self.db.query_db(query, data)
 
     def privateMessagesUpdate(self, user_id, friend_id):
-        query = "SELECT private_messages.message, private_messages.created_at, users.id, users.first_name, users.last_name FROM private_messages left join users on users.id = user_id where user_id = :user_id and friend_id = :friend_id or user_id = :friend_id and friend_id = :user_id ORDER BY created_at ASC LIMIT 50"
+        query = "SELECT private_messages.message, UNIX_TIMESTAMP(private_messages.created_at) as created_at, users.id, users.first_name, users.last_name FROM private_messages left join users on users.id = user_id where user_id = :user_id and friend_id = :friend_id or user_id = :friend_id and friend_id = :user_id ORDER BY created_at ASC LIMIT 50"
         data = {"user_id": user_id, "friend_id": friend_id}
         return self.db.query_db(query, data)
 

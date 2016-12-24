@@ -29,15 +29,15 @@
                         <input type="hidden" name="type" value="register">
                         <div class="form-group">
                             <label for="email">Email address:</label> <p class = "error">{{get_flashed_messages(category_filter=["email_err"])[0]}}</p>
-                            <input type="email" name = "email" class="form-control" id="email">
+                            <input type="email" name = "email" class="form-control" id="email" value = {{get_flashed_messages(category_filter=["email"])[0]}}>
                         </div>
                         <div class="form-group">
                             <label for="first_name">First Name:</label> <p class = "error">{{get_flashed_messages(category_filter=["first_name_err"])[0]}}</p>
-                            <input type="text" name = "first_name" class="form-control" id="first_name">
+                            <input type="text" name = "first_name" class="form-control" id="first_name" value = {{get_flashed_messages(category_filter=["first_name"])[0]}}>
                         </div>
                         <div class="form-group">
                             <label for="last_name">Last Name:</label> <p class = "error">{{get_flashed_messages(category_filter=["last_name_err"])[0]}}</p>
-                            <input type="text" name = "last_name" class="form-control" id="last_name">
+                            <input type="text" name = "last_name" class="form-control" id="last_name" value = {{get_flashed_messages(category_filter=["last_name"])[0]}}>
                         </div>
                         <div class="form-group">
                             <label for="pwd">Password:</label> <p class = "error">{{get_flashed_messages(category_filter=["password_err"])[0]}}</p>

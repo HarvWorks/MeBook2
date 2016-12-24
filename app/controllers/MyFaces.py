@@ -3,6 +3,7 @@ import datetime
 from flask_socketio import SocketIO, join_room, leave_room, emit, send
 from system import socketio
 import time
+from werkzeug.datastructures import ImmutableMultiDict
 
 #
 # import sys
@@ -103,7 +104,7 @@ class MyFaces(Controller):
             return redirect('/login')
         friends = self.models['MyFace'].selectFriends(session['user'])
         self.models['MyFace'].numFriends(len(friends), session['user'])
-        not_friends = self.models['MyFace'].selectNotFriends()
+        not_friends = self.models['MyFace'].selectNotFriends(session['user'])
         pending_friends = self.models['MyFace'].selectPendingFriends(session['user'])
         requesting_friends = self.models['MyFace'].selectRequestingFriends(session['user'])
         return self.load_view('user_table.html', not_friends = not_friends, friends = friends, pending_friends = pending_friends, requesting_friends = requesting_friends)
@@ -146,11 +147,17 @@ class MyFaces(Controller):
         session['currentTimeStamp'] = messages[-1]
         return jsonify(messages = messages)
 
-    @socketio.on('chat_message')
+    @socketio.on('chat_message', namespace = '/chat')
     def chat_message_send(message):
         if not message['message'] == "":
             message['created_at'] = int(time.time())
             emit('chat_message', message, broadcast=True)
+
+    @socketio.on('set_location', namespace = '/map')
+    def chat_message_send(location):
+        print "sdfdsafjdskfjsdjkfjdsfdhsfkjdjskfjdsjklafhsdajfhadsl"
+        print location
+        emit('set_location', location, broadcast=True, namespace = '/map')
 
     def userMessageSend(self, user_id):
         if not "user" in session:
@@ -221,3 +228,21 @@ class MyFaces(Controller):
         self.models['MyFace'].numFriends(len(friends), user_id)
         flash( user[0]['first_name'] + " " + user[0]['last_name'] + " has been unfriended!!!", "success")
         return redirect('/dashboard')
+
+    def search(self):
+        if not "user" in session:
+            return redirect('/login')
+        print "XxXxsjsdfndsfadsflkjdsfjhdshfdshkjfdshfjkdsjkafhdshfjdsa %s" %(request.form['id'])
+        return redirect('/message/'+request.form['id'])
+
+    def grabFriends(self):
+        if not "user" in session:
+            return redirect('/login')
+        friends = self.models['MyFace'].selectFriends(session['user'])
+        if len(friends) < 50:
+            friends += self.models['MyFace'].selectRequestingFriends(session['user'])
+        if len(friends) < 50:
+            friends += self.models['MyFace'].selectPendingFriends(session['user'])
+        if len(friends) < 50:
+            friends += self.models['MyFace'].selectNotFriends(session['user'])
+        return jsonify(friends = friends)

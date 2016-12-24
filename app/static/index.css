@@ -69,6 +69,7 @@ textarea {
 }
 .messagedUsers h3{
     font-size: 1.2em;
+    margin-top: -10px;
     margin-bottom: 0.3em;
 }
 .messagedUsers p{
@@ -87,6 +88,7 @@ textarea {
     overflow-x: hidden;
 }
 #usersMessaged{
+    margin-top: -30px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -105,4 +107,156 @@ textarea {
 }
 .Name{
     margin-bottom: 0.3em;
+}
+
+.tt-query {
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.tt-hint {
+  color: #999
+}
+
+.tt-menu {    /* used to be tt-dropdown-menu in older versions */
+  width: 422px;
+  margin-top: 4px;
+  padding: 4px 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+     -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+          box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.tt-suggestion {
+  padding: 3px 20px;
+  line-height: 24px;
+}
+
+.tt-suggestion.tt-cursor,.tt-suggestion:hover {
+  color: #fff;
+  background-color: #0097cf;
+
+}
+
+.tt-suggestion p {
+  margin: 0;
+}
+
+#map_search_bar {
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+    margin-left: 12px;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 300px;
+  }
+
+#map_search_bar:focus {
+border-color: #4d90fe;
+}
+
+.controls {
+    margin-top: 9px;
+    border: 1px solid transparent;
+    border-radius: 2px 0 0 2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 31px;
+    outline: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+#map{
+    margin-top: -20px;
+}
+
+#chat_area{
+    padding: 0px 10px;
+    margin-right: 45px;
+    margin-bottom: 55px;
+    width: 400px;
+    position: fixed; /* Stay in place */
+    right:0;
+    bottom: 0;
+    z-index: 1; /* Stay on top */
+    background-color: white;
+    opacity: 0.85;
+    border-radius: 6px 6px 6px 6px;
+}
+
+#search_overlay{
+    padding: 0px 10px;
+    margin-top: 35px;
+    padding-top: 10px;
+    width: 300px;
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    opacity: 0.85;
+    background-color: white;
+    border-radius: 0 0px 6px 0;
+}
+
+#search_hide{
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    background-color: white;
+    top: 0;
+    padding: 0.5em 0.3em 0.5em 0;
+    border-radius: 0 6px 6px 0;
+    opacity: 0.85;
+}
+
+#search_hide_button{
+    outline: none;
+    border: none;
+    background-color: white;
+    opacity: 1;
+}
+
+#message_hide{
+    position: fixed; /* Stay in place */
+    z-index: 2; /* Stay on top */
+    background-color: white;
+    bottom: 0;
+    opacity: 0.85;
+    right: 0;
+    margin-right: 398px;
+    padding: 0.5em 0.3em 0.5em 0;
+    border-radius: 0 6px 6px 0;
+}
+
+#message_hide_button{
+    outline: none;
+    border: none;
+    opacity: 0.85;
+    background-color: white;
+    position: fixed;
+    z-index: 2;
+    margin: 1.3em;
+    opacity: 1;
+}
+
+.name_col{
+    width: 45px;
+    display: inline-block;
+}
+
+.messages{
+    width: 270px;
+    padding: 0 10px;
+    display: inline-block;
+}
+
+.messages_space{
+    width: 85px;
+    display: inline-block;
 }

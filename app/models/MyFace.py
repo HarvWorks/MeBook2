@@ -25,9 +25,9 @@ class MyFace(Model):
         data = { 'id': id }
         return self.db.query_db(query, data)
 
-    def selectNotFriends(self):
+    def selectNotFriends(self, id):
         query = "SELECT users.id, users.email, users.first_name, users.last_name, users.num_friends, DATE_FORMAT(users.created_at,'%b %d %Y') as created_at FROM users WHERE users.id NOT IN (SELECT friends.friend_id FROM friends WHERE friends.friend_id = :id or friends.user_id = :id) and users.id NOT IN (SELECT friends.user_id FROM friends WHERE friends.friend_id = :id or friends.user_id = :id) and not users.id = :id ORDER BY last_name ASC"
-        data = {'id': session['user']}
+        data = {'id': id}
         return self.db.query_db(query, data)
 
     def selectPendingFriends(self, id):

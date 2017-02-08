@@ -33,10 +33,11 @@
             }
             return tempUpdated
         }
-        $.get('/newwall_json', function(messages) {
+        $.get('/newwall_json', function(messages, comments) {
+            console.log(comments);
+            var messageIdArr = []
             var messageStr = "";
             for(var i = 0; i < messages.messages.length; i++) {
-                messageStr += '<div class="row"><div class="col-xs-12">';
                 var updated = ""
                 if (messages.messages[i]['created_at'] != messages.messages[i]['updated_at']){
                     var tempUpdated = messages.messages[i]['updated_at']
@@ -46,21 +47,38 @@
                     tempUpdated = messages.messages[i]['created_at']
                     updated = timeStampGen(tempUpdated)
                 }
+                console.log(messages.messages[i]);
                 messageStr += "<h2 class = 'Name'>" + messages.messages[i].first_name + " " + messages.messages[i].last_name +  "<span class = 'messageTimeStamp'> &nbsp " + updated + "</span></h2>";
                 messageStr += "<p>" + messages.messages[i].message + "</p>";
-                messageStr += '<form id="message" action="/wall/post" method="post">'
-                messageStr += "</div></div>";
-                console.log(messages.messages[i]);
+                messageStr += '<div class="row"><div class="col-xs-12">';
+                messageStr += "<form id='comment" + messages.messages[i].message_id + "' action='/wall/comment/" + messages.messages[i].message_id + "' method='post'><div class='form-group'>"
+                messageStr += "<textarea id ='commentBox" + messages.messages[i].message_id + "' class='form-control' name='comment' rows='6' placeholder='Post a reply to " + messages.messages[i].first_name + "'></textarea></div>"
+                messageStr += "<input type='submit' value='Reply' class='btn btn-default'></form>"
+                messageStr += '</div></div>';
+                messageIdArr.push(messages.messages[i].message_id)
             }
+
             $('#messagesBox').html(messageStr);
+
+            for (var i = messages.messages.length - 1; i >= 0 ; i--) {
+                var boxId  = "commentBox" + messageIdArr[i]
+                document.getElementById(boxId).addEventListener('keypress', function (e) {
+                    var key = e.which || e.keyCode;
+                    if (key === 13) { // 13 is enter
+                        var formId = "comment"
+                        for (var j = 10; j < e.target.id.length; j++){
+                            formId += e.target.id[j]
+                        }
+                        document.getElementById(formId).submit()
+                    }
+                });
+            }
         }, 'json');
-        console.log(messages);
         window.onresize = displayWindowSize;
         window.onload = displayWindowSize;
         function displayWindowSize() {
             screenWidth = window.innerWidth;
             screenHeight = window.innerHeight;
-            document.getElementById("messagesBox").style.height = String(screenHeight - 300) + "px";
         };
         </script>
     </head>
@@ -97,11 +115,12 @@
                                     document.getElementById("message").submit()
                                 }
                             });
+
                         </script>
                     </form>
                 </div>
             </div>
-            <div id="messagesBox" style="height: 1000px">
+            <div id="messagesBox">
             </div>
         </div>
     </body>

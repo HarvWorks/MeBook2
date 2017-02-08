@@ -89,11 +89,19 @@ class MyFaces(Controller):
             self.models['MyFace'].postToWall(request.form['message'])
         return redirect('/')
 
+    def postComment(self, message_id):
+        if not "user" in session:
+            return redirect('/login')
+        if request.form['comment']:
+            self.models['MyFace'].postOfComment(request.form['comment'], message_id)
+        return redirect('/')
+
     def newWall_json(self):
         if not "user" in session:
             return redirect('/login')
         messages = self.models['MyFace'].initFetchWall()
-        return jsonify( messages = messages )
+        comments = self.models['MyFace'].initFetchWallComments()
+        return jsonify( messages = messages, comments = comments )
 
     def logout(self):
         session.clear()

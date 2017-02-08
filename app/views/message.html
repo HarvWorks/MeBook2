@@ -205,22 +205,24 @@
                                 <h3>
                                     {{user['friend_first_name']}} {{user['friend_last_name']}}
                                 </h3>
-                                <p>
-                                    {{user['message'][0:100]}}
-                                </p>
-                                <p>
-                                    <span>Posted at: {{user['created_at'].strftime('%b %d, %Y %l:%M%p')}}</span>
-                                </p>
+                                {% if user['message'] %}
+                                    <p>
+                                        {{user['message'][0:100]}}
+                                    </p>
+                                    <p>
+                                        <span>Posted at: {{user['created_at'].strftime('%b %d, %Y %l:%M%p')}}</span>
+                                    </p>
+                                {% endif %}
                             </div>
                         </a>
                     {% endfor %}
                 {% endif %}
             </div>
         </div>
+        {% if user %}
         <div id="message_hide">
             <button type="button" id = "search_hide_button"><span class="glyphicon glyphicon-align-justify"></span></button>
         </div>
-        {% if user %}
             <div style="height: 1000px" id="chat_area">
                 <div class="row">
                     <button type="button" id = "message_hide_button"><span class="glyphicon glyphicon-align-justify"></span></button>
@@ -273,20 +275,22 @@
             function displayWindowSize() {
                 screenWidth = window.innerWidth;
                 screenHeight = window.innerHeight;
+                document.getElementById("map").style.height = String(screenHeight - 52) + "px";
                 document.getElementById("search_overlay").style.height = String(screenHeight - 137) + "px";
                 // document.getElementById("usersMessaged").style.height = String(screenHeight - 137) + "px";
-                document.getElementById("chat_area").style.height = String(screenHeight - 127) + "px";
-                document.getElementById("chatbox").style['max-height'] = String(screenHeight - 178) + "px";
-                // document.getElementById("chatbox_wrapper").style.height = String(document.getElementById("message").offsetWidth) + "px";
-                document.getElementById("chatbox_wrapper").style.height = String(screenHeight - 178) + "px";
-                document.getElementById("map").style.height = String(screenHeight - 52) + "px";
-                if (!clicked) {
-                    document.getElementById("message_hide").style.marginBottom = String(screenHeight - 119) + "px";
-                }
+                {% if users %}
+                    document.getElementById("chat_area").style.height = String(screenHeight - 127) + "px";
+                    document.getElementById("chatbox").style['max-height'] = String(screenHeight - 178) + "px";
+                    // document.getElementById("chatbox_wrapper").style.height = String(document.getElementById("message").offsetWidth) + "px";
+                    document.getElementById("chatbox_wrapper").style.height = String(screenHeight - 178) + "px";
+                    if (!clicked) {
+                        document.getElementById("message_hide").style.marginBottom = String(screenHeight - 119) + "px";
+                    }
+                    updateScroll()
+                {% endif %}
                 var center = map.getCenter();
                 google.maps.event.trigger(map, 'resize');
                 map.setCenter(center);
-                updateScroll()
             };
             function updateScroll(){
                 var element = document.getElementById("chatbox");

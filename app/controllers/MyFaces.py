@@ -89,6 +89,21 @@ class MyFaces(Controller):
             self.models['MyFace'].postToWall(request.form['message'])
         return redirect('/')
 
+    def delPost(self, message_id):
+        if not "user" in session:
+            return redirect('/login')
+        self.models['MyFace'].delOfPost(message_id)
+        return redirect('/')
+
+    def editPost(self, message_id):
+        if not "user" in session:
+            return redirect('/login')
+        print "------------------------------------"
+        print request.form['editBox']
+        print "------------------------------------"
+        self.models['MyFace'].editOfPost(message_id, request.form['editBox'])
+        return redirect('/')
+
     def postComment(self, message_id):
         if not "user" in session:
             return redirect('/login')
@@ -96,12 +111,29 @@ class MyFaces(Controller):
             self.models['MyFace'].postOfComment(request.form['comment'], message_id)
         return redirect('/')
 
+    def delComment(self, comment_id):
+        if not "user" in session:
+            return redirect('/login')
+        self.models['MyFace'].delOfComment(comment_id)
+        return redirect('/')
+
+    def editComment(self, comment_id):
+        if not "user" in session:
+            return redirect('/login')
+        print "------------------------------------"
+        print request.form['editBox']
+        print "------------------------------------"
+        self.models['MyFace'].editOfComment(comment_id, request.form['editBox'])
+        return redirect('/')
+
     def newWall_json(self):
         if not "user" in session:
             return redirect('/login')
         messages = self.models['MyFace'].initFetchWall()
         comments = self.models['MyFace'].initFetchWallComments()
-        return jsonify( messages = messages, comments = comments )
+        user_id = session['user']
+        data = [messages, comments, user_id]
+        return jsonify( data = data )
 
     def logout(self):
         session.clear()

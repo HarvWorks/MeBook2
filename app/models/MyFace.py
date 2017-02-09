@@ -79,13 +79,6 @@ class MyFace(Model):
         query = "SELECT users.id, users.level FROM friends L1 left join users ON users.id = L1.friend_id  WHERE user_id = :id AND EXISTS(SELECT * FROM   friends L2 WHERE  L1.user_id = L2.friend_id AND L1.friend_id = L2.user_id) ORDER BY L1.created_at ASC"
         data = { 'id': user_id }
         users = self.db.query_db(query, data)
-        print ""
-        print "--------------------------------------------------------------------------"
-        print ""
-        print users
-        print ""
-        print "--------------------------------------------------------------------------"
-        print ""
         for user in reversed(users):
             query = "SELECT id, first_name as friend_first_name, last_name as friend_last_name FROM users WHERE id = :id"
             data = { 'id': user['id'] }
@@ -112,9 +105,40 @@ class MyFace(Model):
         data = {'message': message, 'id': session['user']}
         return self.db.query_db(query, data)
 
+    def delOfPost(self, message_id):
+        query = "SELECT * FROM user_dashboard.messages WHERE id = :id && user_id = :user_id"
+        data = {'id': message_id, 'user_id': session['user']}
+        if (self.db.query_db(query, data)):
+            query = "DELETE FROM user_dashboard.comments WHERE message_id = :message_id"
+            data = {'message_id': message_id}
+            self.db.query_db(query, data)
+            query = "DELETE FROM user_dashboard.messages WHERE id = :id && user_id = :user_id"
+            data = {'id': message_id, 'user_id': session['user']}
+            self.db.query_db(query, data)
+        return
+
+    def editOfPost(self, message_id, message):
+        query = "UPDATE messages SET message = :message, updated_at = NOW() WHERE id = :id && user_id = :user_id"
+        data = {'message': message, 'id': message_id, 'user_id': session['user']}
+        return self.db.query_db(query, data)
+
     def postOfComment(self, comment, message_id):
         query = "INSERT INTO comments (comment, created_at, updated_at, user_id, message_id) VALUES (:comment, NOW(), NOW(), :id, :message_id)"
         data = {'comment': comment, 'id': session['user'], 'message_id': message_id}
+        return self.db.query_db(query, data)
+
+    def delOfComment(self, comment_id):
+        query = "SELECT * FROM user_dashboard.comments WHERE id = :id && user_id = :user_id"
+        data = {'id': comment_id, 'user_id': session['user']}
+        if (self.db.query_db(query, data)):
+            query = "DELETE FROM user_dashboard.comments WHERE id = :id && user_id = :user_id"
+            data = {'id': comment_id, 'user_id': session['user']}
+            self.db.query_db(query, data)
+        return
+
+    def editOfComment(self, comment_id, comment):
+        query = "UPDATE comments SET comment = :comment, updated_at = NOW() WHERE id = :id && user_id = :user_id"
+        data = {'comment': comment, 'id': comment_id, 'user_id': session['user']}
         return self.db.query_db(query, data)
 
     def initFetchWall(self):
@@ -123,7 +147,7 @@ class MyFace(Model):
         return self.db.query_db(query, data)
 
     def initFetchWallComments(self):
-        query = "SELECT messages.id as message_id, comments.comment, comments.id as comments_id, comments_user.first_name, comments_user.last_name, comments.created_at, comments.updated_at FROM users as comments_user JOIN comments ON comments_user.id = comments.user_id JOIN messages ON comments.message_id = messages.id JOIN users ON users.id = messages.user_id WHERE users.id IN ( SELECT users.id FROM friends L1 left join users ON users.id = L1.friend_id WHERE user_id = :id AND EXISTS ( SELECT * FROM friends L2 WHERE  L1.user_id = L2.friend_id AND L1.friend_id = L2.user_id ) ) or users.id in ( :id ) ORDER BY message_id DESC"
+        query = "SELECT messages.id as message_id, comments.comment, comments.id as comment_id, comments.user_id, comments_user.first_name, comments_user.last_name, comments.created_at, comments.updated_at FROM users as comments_user JOIN comments ON comments_user.id = comments.user_id JOIN messages ON comments.message_id = messages.id JOIN users ON users.id = messages.user_id WHERE users.id IN ( SELECT users.id FROM friends L1 left join users ON users.id = L1.friend_id WHERE user_id = :id AND EXISTS ( SELECT * FROM friends L2 WHERE  L1.user_id = L2.friend_id AND L1.friend_id = L2.user_id ) ) or users.id in ( :id ) ORDER BY message_id DESC"
         data = { 'id': session['user'] }
         return self.db.query_db(query, data)
 

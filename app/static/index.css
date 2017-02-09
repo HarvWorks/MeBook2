@@ -260,3 +260,16 @@ border-color: #4d90fe;
     width: 85px;
     display: inline-block;
 }
+
+.delete{
+    font-size: 0.8em;
+}
+
+.deleteButton{
+    margin-top: 1.5em;
+}
+
+.editButton{
+    margin-top: 1.5em;
+    margin-right: 1em;
+}

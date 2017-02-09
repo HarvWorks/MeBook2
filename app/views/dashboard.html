@@ -11,56 +11,78 @@
         <link rel="stylesheet" href="/static/index.css" type="text/css">
         <script type="text/javascript">
         function timeStampGen(tempUpdated){
-            if ( Date.parse(tempUpdated) > Date.now() - 1000 * 3600 * 24 ){
-                var min = Math.floor(Date.parse(tempUpdated)/1000/60)%60
-                var hour = Math.floor(Date.parse(tempUpdated)/1000/60/60)%24
-                var halfDay = Math.floor(hour/12)
-                if (halfDay == 0){
-                    tempUpdated = String(hour) + ":" + String(min) + " AM"
-                }
-                else {
-                    tempUpdated = String(hour - 12) + ":" + String(min) + " PM"
-                }
-            }
-            else if (Date.parse(tempUpdated) > Date.now() - 1000 * 3600 * 24 * 7) {
-                tempUpdated = tempUpdated.split(",")[0].split(" ")
-            }
-            else if (Date.parse(tempUpdated) > Date.now() - 1000 * 3600 * 24 * 365) {
-                tempUpdated = String(tempUpdated.split(",")[1].split(" ")[2]) + " " + String(tempUpdated.split(",")[1].split(" ")[1])
+            var min = Math.floor(Date.parse(tempUpdated)/1000/60)%60
+            var hour = Math.floor(Date.parse(tempUpdated)/1000/60/60)%24
+            var halfDay = Math.floor(hour/12)
+            if (halfDay == 0){
+                tempUpdate = String(hour) + ":" + String(min) + " AM"
             }
             else {
-                tempUpdated = String(tempUpdated.split(",")[1].split(" ")[2]) + " " + String(tempUpdated.split(",")[1].split(" ")[1]) + ", " + String(tempUpdated.split(",")[1].split(" ")[3])
+                tempUpdate = String(hour - 12) + ":" + String(min) + " PM"
             }
-            return tempUpdated
+            if (Date.parse(tempUpdated) > Date.now() - 1000 * 3600 * 24 * 7 && ) {
+                tempUpdate = tempUpdated.split(",")[0].split(" ") + " at " + tempUpdate
+            }
+            else if (Date.parse(tempUpdated) > Date.now() - 1000 * 3600 * 24 * 365) {
+                tempUpdate = String(tempUpdated.split(",")[1].split(" ")[2]) + " " + String(tempUpdated.split(",")[1].split(" ")[1]) + " at " + tempUpdate
+            }
+            else {
+                tempUpdate = String(tempUpdated.split(",")[1].split(" ")[2]) + " " + String(tempUpdated.split(",")[1].split(" ")[1]) + ", " + String(tempUpdated.split(",")[1].split(" ")[3]) + " at " + tempUpdate
+            }
+            return tempUpdate
         }
-        $.get('/newwall_json', function(messages, comments) {
-            console.log(comments);
+        $.get('/newwall_json', function(data) {
             var messageIdArr = []
+            console.log(data.data[1]);
             var messageStr = "";
-            for(var i = 0; i < messages.messages.length; i++) {
+            var j = 0
+            for (var i = 0; i < data.data[0].length; i++) {
                 var updated = ""
-                if (messages.messages[i]['created_at'] != messages.messages[i]['updated_at']){
-                    var tempUpdated = messages.messages[i]['updated_at']
-                    updated = " Last updated at: " + tempUpdated
+                if (data.data[0][i]['created_at'] != data.data[0][i]['updated_at']){
+                    var tempUpdated = data.data[0][i]['updated_at']
+                    updated = " Last updated at: " + timeStampGen(tempUpdated)
                 }
                 else{
-                    tempUpdated = messages.messages[i]['created_at']
+                    tempUpdated = data.data[0][i]['created_at']
                     updated = timeStampGen(tempUpdated)
                 }
-                console.log(messages.messages[i]);
-                messageStr += "<h2 class = 'Name'>" + messages.messages[i].first_name + " " + messages.messages[i].last_name +  "<span class = 'messageTimeStamp'> &nbsp " + updated + "</span></h2>";
-                messageStr += "<p>" + messages.messages[i].message + "</p>";
-                messageStr += '<div class="row"><div class="col-xs-12">';
-                messageStr += "<form id='comment" + messages.messages[i].message_id + "' action='/wall/comment/" + messages.messages[i].message_id + "' method='post'><div class='form-group'>"
-                messageStr += "<textarea id ='commentBox" + messages.messages[i].message_id + "' class='form-control' name='comment' rows='6' placeholder='Post a reply to " + messages.messages[i].first_name + "'></textarea></div>"
+                messageStr += "<div class='row'><div class='col-xs-10'><h2 class = 'Name'>" + data.data[0][i].first_name + " " + data.data[0][i].last_name +  "<span class = 'messageTimeStamp'> &nbsp " + updated + "</span></h2></div>";
+                if (data.data[2] ==  data.data[0][i].id){
+                    messageStr += "<div class='col-xs-2'><form class='pull-right btn-group-sm' action='/wall/post/" + data.data[0][i].message_id + "' method='get'><input type='submit' value='Delete' class='btn btn-warning delete deleteButton'></form>"
+                    messageStr += "<div class='pull-right btn-group-sm'><input id='messageEditButton" + data.data[0][i].message_id + "' type='button' value='Edit' class='btn btn-success delete editButton'></div></div>";
+                    // "<form class='pull-right btn-group-sm' action='/wall/post/" + data.data[0][i].message_id + "' method='post'><input type='submit' value='Edit' class='btn btn-success delete deleteButton'></form></div>";
+                }
+                messageStr += "</div><div id=messageid" + data.data[0][i].message_id + "><p>" + data.data[0][i].message + "</p></div>"
+                messageStr += "<div class='row'><div class='col-xs-1'></div><div class='col-xs-11'>";
+                while (j < data.data[1].length && data.data[1][j].message_id == data.data[0][i].message_id) {
+                    if (data.data[1][j]['created_at'] != data.data[1][j]['updated_at']){
+                        var tempUpdated = data.data[1][j]['updated_at']
+                        updated = " Last updated at: " + timeStampGen(tempUpdated)
+                    }
+                    else{
+                        tempUpdated = data.data[1][j]['created_at']
+                        updated = timeStampGen(tempUpdated)
+                    }
+                    messageStr += "<div class='row'><div class='col-xs-10'><h2 class = 'Name'>" + data.data[1][j].first_name + " " + data.data[1][j].last_name +  "<span class = 'messageTimeStamp'> &nbsp " + updated + "</span></h2></div>";
+                    if (data.data[2] ==  data.data[1][j].user_id){
+                        messageStr += "<div class='col-xs-2'>"
+                        messageStr += "<form class='pull-right btn-group-sm' action='/wall/comment/" + data.data[1][j].comment_id + "' method='get'><input type='submit' value='Delete' class='btn btn-warning delete deleteButton'></form>";
+                        messageStr += "<div class='pull-right btn-group-sm'><input id='commentEditButton" + data.data[1][j].comment_id + "' type='button' value='Edit' class='btn btn-success delete editButton'></div></div>";
+                        // "<form class='pull-right btn-group-sm' action='/wall/comment_edit/" + data.data[1][j].comment_id + "' method='post'><input type='submit' value='Edit' class='btn btn-success delete deleteButton'></form></div>";
+                    }
+                    messageStr += "</div><div id=commentid" + data.data[1][j].comment_id + "><p>" + data.data[1][j].comment + "</p></div>";
+                    j++
+                }
+                messageStr += "<br><form id='comment" + data.data[0][i].message_id + "' action='/wall/comment/" + data.data[0][i].message_id + "' method='post'><div class='form-group'>"
+                messageStr += "<textarea id ='commentBox" + data.data[0][i].message_id + "' class='form-control' name='comment' rows='6' placeholder='Post a reply to " + data.data[0][i].first_name + "'></textarea></div>"
                 messageStr += "<input type='submit' value='Reply' class='btn btn-default'></form>"
                 messageStr += '</div></div>';
-                messageIdArr.push(messages.messages[i].message_id)
+                messageIdArr.push(data.data[0][i].message_id)
             }
 
             $('#messagesBox').html(messageStr);
 
-            for (var i = messages.messages.length - 1; i >= 0 ; i--) {
+            for (var i = data.data[0].length - 1; i >= 0 ; i--) {
                 var boxId  = "commentBox" + messageIdArr[i]
                 document.getElementById(boxId).addEventListener('keypress', function (e) {
                     var key = e.which || e.keyCode;
@@ -73,7 +95,54 @@
                     }
                 });
             }
+
+            var editButtons = document.getElementsByClassName("editButton")
+
+            for (var i = 0; i <editButtons.length; i++){
+                editButtons[i].addEventListener('click', function (e){
+                    console.log(e.target.className[e.target.className.length - 8]);
+                    if (e.target.className[e.target.className.length - 1] != "d" && e.target.className[e.target.className.length - 8] != "d"){
+                        editTextBox(this.id, e.target);
+                    }
+                });
+            }
         }, 'json');
+
+        function editTextBox(target, activeTarget){
+            var tempNumber = ""
+            for (var i = 17; i < target.length; i++){
+                tempNumber += target[i]
+            }
+            var tempEditId = ""
+            var editType = ""
+            if (target[0] == "m") {
+                tempEditId = "#messageid" + tempNumber
+                editType = "post"
+            }
+            else {
+                tempEditId = "#commentid" + tempNumber
+                editType = "comment_edit"
+            }
+            var messageText = $(tempEditId).html()
+            var textBoxText = ""
+            for (var i = 3; i < messageText.length - 4; i++){
+                textBoxText += messageText[i]
+            }
+            var textBoxStr = "<br><form id='" + editType + tempNumber + "' action='/wall/" + editType + "/" + tempNumber + "' method='post'><div class='form-group'>"
+            textBoxStr += "<textarea id ='" + editType + "Box" + tempNumber + "' class='form-control' name='editBox' rows='6'>" + textBoxText + "</textarea></div><input type='submit' value='Edit' class='btn btn-default'></form>"
+            $(tempEditId).html(textBoxStr)
+            target = "#" + target
+            activeTarget.className += " disabled";
+            var formId = editType + tempNumber
+            var boxId = editType + "Box" + tempNumber
+            document.getElementById(boxId).addEventListener('keypress', function (e) {
+                var key = e.which || e.keyCode;
+                if (key === 13) { // 13 is enter
+                    document.getElementById(formId).submit()
+                }
+            });
+        }
+
         window.onresize = displayWindowSize;
         window.onload = displayWindowSize;
         function displayWindowSize() {

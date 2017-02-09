@@ -29,6 +29,10 @@
             </div>
         </nav>
         <div class="container">
+            <p>
+                {{get_flashed_messages(category_filter=["success"])[0]}}
+                {{get_flashed_messages(category_filter=["ignored"])[0]}}
+            </p>
             <div class="row">
                 <div class="col-md-3">
                     <h2>{{user[0]['first_name']}} {{user[0]['last_name']}}</h2>
@@ -62,16 +66,44 @@
                 &nbsp
             </p>
             <div class="row">
-                <form action="/message/{{user[0]['id']}}" method="get">
+                <form action="/message/{{user[0]['id']}}" method="post">
                     <input type="hidden" name="type" value="message">
                     <button type="submit" class="btn btn-default">Message User</button>
                 </form>
             </div>
             <div class="row">
+                {% if friendType == "friend" %}
+                <form action="/unfriend/{{user[0]['id']}}" method="post">
+                    <input type="hidden" name="page" value="profile">
+                    <button type="submit" class="btn btn-warning">Unfriend!</button>
+                </form>
+                {% endif %}
+                {% if friendType == "requestingFriend" %}
+                <form action="/acceptfriend/{{user[0]['id']}}" method="post">
+                    <input type="hidden" name="page" value="profile">
+                    <button type="submit" class="btn btn-success">Add as Friend!</button>
+                </form>
+                <form action="/ignore/{{user[0]['id']}}" method="post">
+                    <input type="hidden" name="page" value="profile">
+                    <button type="submit" class="btn btn-warning">Ignore!</button>
+                </form>
+                {% endif %}
+                {% if friendType == "pendingFriend" %}
+                <form action="/cancelrequest/{{user[0]['id']}}" method="post">
+                    <input type="hidden" name="page" value="profile">
+                    <button type="submit" class="btn btn-warning">Cancel Request</button>
+                </form>
+                {% endif %}
+                {% if friendType == "user" %}
+                <form action="/requestfriend/{{user[0]['id']}}" method="post">
+                    <input type="hidden" name="page" value="profile">
+                    <button type="submit" class="btn btn-success">Request Friend!</button>
+                </form>
                 <form action="/confirm/{{user[0]['id']}}" method="post">
                     <input type="hidden" name="type" value="block">
                     <button type="submit" class="btn btn-danger">Block User</button>
                 </form>
+                {% endif %}
             </div>
         </div>
     </body>

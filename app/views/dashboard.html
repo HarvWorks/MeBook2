@@ -20,7 +20,10 @@
             else {
                 tempUpdate = String(hour - 12) + ":" + String(min) + " PM"
             }
-            if (Date.parse(tempUpdated) > Date.now() - 1000 * 3600 * 24 * 7 && ) {
+            if (Date.parse(tempUpdated) > Date.now() - 1000 * 3600 * 24){
+                tempUpdate = "Today at " + tempUpdate
+            }
+            else if (Date.parse(tempUpdated) > Date.now() - 1000 * 3600 * 24 * 7) {
                 tempUpdate = tempUpdated.split(",")[0].split(" ") + " at " + tempUpdate
             }
             else if (Date.parse(tempUpdated) > Date.now() - 1000 * 3600 * 24 * 365) {
@@ -46,7 +49,7 @@
                     tempUpdated = data.data[0][i]['created_at']
                     updated = timeStampGen(tempUpdated)
                 }
-                messageStr += "<div class='row'><div class='col-xs-10'><h2 class = 'Name'>" + data.data[0][i].first_name + " " + data.data[0][i].last_name +  "<span class = 'messageTimeStamp'> &nbsp " + updated + "</span></h2></div>";
+                messageStr += "<div class='row'><div class='col-xs-10'><a href='/profile/" + data.data[0][i].user_id + "'><h2 class = 'Name'>" + data.data[0][i].first_name + " " + data.data[0][i].last_name +  "</a><span class = 'messageTimeStamp'> &nbsp " + updated + "</span></h2></div>";
                 if (data.data[2] ==  data.data[0][i].id){
                     messageStr += "<div class='col-xs-2'><form class='pull-right btn-group-sm' action='/wall/post/" + data.data[0][i].message_id + "' method='get'><input type='submit' value='Delete' class='btn btn-warning delete deleteButton'></form>"
                     messageStr += "<div class='pull-right btn-group-sm'><input id='messageEditButton" + data.data[0][i].message_id + "' type='button' value='Edit' class='btn btn-success delete editButton'></div></div>";
@@ -63,7 +66,7 @@
                         tempUpdated = data.data[1][j]['created_at']
                         updated = timeStampGen(tempUpdated)
                     }
-                    messageStr += "<div class='row'><div class='col-xs-10'><h2 class = 'Name'>" + data.data[1][j].first_name + " " + data.data[1][j].last_name +  "<span class = 'messageTimeStamp'> &nbsp " + updated + "</span></h2></div>";
+                    messageStr += "<div class='row'><div class='col-xs-10'><a href='/profile/" + data.data[0][i].user_id + "'><h2 class = 'Name'>" + data.data[1][j].first_name + " " + data.data[1][j].last_name +  "</a><span class = 'messageTimeStamp'> &nbsp " + updated + "</span></h2></div>";
                     if (data.data[2] ==  data.data[1][j].user_id){
                         messageStr += "<div class='col-xs-2'>"
                         messageStr += "<form class='pull-right btn-group-sm' action='/wall/comment/" + data.data[1][j].comment_id + "' method='get'><input type='submit' value='Delete' class='btn btn-warning delete deleteButton'></form>";
@@ -184,7 +187,6 @@
                                     document.getElementById("message").submit()
                                 }
                             });
-
                         </script>
                     </form>
                 </div>

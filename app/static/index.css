@@ -21,6 +21,16 @@ h2{
     float: right;
     vertical-align: bottom;
 }
+
+.success{
+    display: inline-block;
+    font-size: 12px;
+    color: green;
+    margin: 0;
+    float: right;
+    vertical-align: middle;
+}
+
 textarea {
     resize: none;
     overflow-y: auto;
@@ -272,4 +282,9 @@ border-color: #4d90fe;
 .editButton{
     margin-top: 1.5em;
     margin-right: 1em;
+}
+
+.col-xs-10 a{
+    text-decoration: none;
+    color: #0f49a8;
 }

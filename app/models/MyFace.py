@@ -48,6 +48,8 @@ class MyFace(Model):
     def unFriend(self, user_id):
         query = "DELETE FROM friends WHERE  user_id = :user_id and friend_id = :friend_id or user_id = :friend_id and friend_id = :user_id"
         data = {'user_id': user_id, 'friend_id': session['user']}
+        user = self.findUser(user_id)
+        flash(user[0]['first_name'] + " " + user[0]['last_name'] + " has been Unfriended!!", "ignored")
         return self.db.query_db(query, data)
 
     def ignore(self, user_id):
@@ -191,6 +193,7 @@ class MyFace(Model):
 
         if sucess >= 3:
             self.editInfo(info,id)
+            flash("Personal info was updated successfully","info_success")
             return
         return
 
@@ -209,8 +212,9 @@ class MyFace(Model):
         elif not password['password'] == password['confirm']:
             flash("Passwords do not match.","confirm_err")
         else:
-            pw_hash = self.bcrypt.generate_password_hash(registration['password'])
+            pw_hash = self.bcrypt.generate_password_hash(password['password'])
             self.editPass(pw_hash, id)
+            flash("Password was changed successfully","pass_success")
             return
         return
 
@@ -237,6 +241,11 @@ class MyFace(Model):
     def findUser(self, login):
         query = "SELECT * FROM users WHERE id = :id"
         data = {'id': login}
+        return self.db.query_db(query, data)
+
+    def findRelationship(self, user_id):
+        query = "SELECT * FROM friends WHERE user_id = :user_id and friend_id = :friend_id or user_id = :friend_id and friend_id = :user_id"
+        data = {'user_id': user_id, 'friend_id': session['user']}
         return self.db.query_db(query, data)
 
     def regCheck(self, registration):

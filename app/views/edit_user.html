@@ -32,6 +32,7 @@
             <div class="row">
                 <div class="col-md-4">
                     <h2>Edit Information:</h2>
+                    <p class = "success">{{ get_flashed_messages(category_filter=["info_success"])[0] }}</p>
                     <form action="/process/{{session['user']}}" method='POST'>
                         <input type="hidden" name="type" value="edit_info">
                         <div class="form-group">
@@ -53,6 +54,7 @@
                 </div>
                 <div class="col-md-4">
                     <h2>Update Password:</h2>
+                    <p class = "success">{{ get_flashed_messages(category_filter=["pass_success"])[0] }}</p>
                     <form action="/process/{{session['user']}}" method='POST'>
                         <input type="hidden" name="type" value="edit_pass">
                         <div class="form-group">
@@ -73,10 +75,11 @@
             <div class="row">
                 <div class="col-md-12">
                     <h2>Edit Description:</h2>
+                    <p class = "success">{{ get_flashed_messages(category_filter=["desc_success"])[0] }}</p>
                     <form id="message" action="/process/{{session['user']}}" method="post">
                         <input type="hidden" name="type" value="edit_desc">
                         <div class="form-group">
-                            <textarea id ="messageBox" class="form-control" name="description" rows="7" placeholder="Add something interesting to your profile">{% if get_flashed_messages(category_filter=["description"])[0] != none %} {{ get_flashed_messages(category_filter=["description"])[0] }}  {% endif %}</textarea>
+                            <textarea id ="messageBox" class="form-control" name="description" rows="7" placeholder="Add something interesting to your profile">{% if get_flashed_messages(category_filter=["description"])[0] != none %}{{ get_flashed_messages(category_filter=["description"])[0] }}{% endif %}</textarea>
                         </div>
                         <input type="submit" value="Edit Description" class="btn btn-default">
                         <script type="text/javascript">

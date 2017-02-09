@@ -98,9 +98,6 @@ class MyFaces(Controller):
     def editPost(self, message_id):
         if not "user" in session:
             return redirect('/login')
-        print "------------------------------------"
-        print request.form['editBox']
-        print "------------------------------------"
         self.models['MyFace'].editOfPost(message_id, request.form['editBox'])
         return redirect('/')
 
@@ -120,9 +117,6 @@ class MyFaces(Controller):
     def editComment(self, comment_id):
         if not "user" in session:
             return redirect('/login')
-        print "------------------------------------"
-        print request.form['editBox']
-        print "------------------------------------"
         self.models['MyFace'].editOfComment(comment_id, request.form['editBox'])
         return redirect('/')
 
@@ -163,7 +157,21 @@ class MyFaces(Controller):
         if not "user" in session:
             return redirect('/login')
         user = self.models['MyFace'].findUser(user_id)
-        return self.load_view('profile.html', user = user)
+        relationship = self.models['MyFace'].findRelationship(user_id)
+        friendType = ""
+        print "------------------------------------------------------"
+        print relationship
+        print "------------------------------------------------------"
+        if len(relationship) > 1:
+            friendType = "friend"
+        elif len(relationship) == 0:
+            friendType = "user"
+        else:
+            if relationship[0]['user_id'] == session['user']:
+                friendType = "pendingFriend"
+            else:
+                friendType = "requestingFriend"
+        return self.load_view('profile.html', user = user, friendType = friendType)
 
     def message(self):
         if not "user" in session:
@@ -214,14 +222,6 @@ class MyFaces(Controller):
         session['currentTimeStamp'] = datetime.datetime.now()
         return jsonify(messages = messages)
 
-    def requestFriend(self, user_id):
-        if not "user" in session:
-            return redirect('/login')
-        user = self.models['MyFace'].findUser(user_id)
-        self.models['MyFace'].addFriend(user_id)
-        flash( "A friend request has been sent to " + user[0]['first_name'] + " " + user[0]['last_name'] + "!", "success")
-        return redirect('/dashboard')
-
     def processUser(self, user_id):
         user = self.models['MyFace'].findUser(session['user'])
         if int(user_id) == session['user'] or user[0]['level'] == 9:
@@ -234,20 +234,44 @@ class MyFaces(Controller):
             if request.form['type'] == 'edit_desc':
                 info = request.form['description']
                 self.models['MyFace'].editDesc(info, user_id)
-            flash("MOOOO!!!")
+                flash("Description was updated successfully","desc_success")
         return redirect('/profile')
+
+    def requestFriend(self, user_id):
+        if not "user" in session:
+            return redirect('/login')
+        user = self.models['MyFace'].findUser(user_id)
+        self.models['MyFace'].addFriend(user_id)
+        requestFrom = request.url_rule
+        flash( "A friend request has been sent to " + user[0]['first_name'] + " " + user[0]['last_name'] + "!", "success")
+        if request.form['page'] == "profile":
+            tempRoute = '/profile/' + user_id
+            return redirect(tempRoute)
+        else:
+            return redirect('/dashboard')
 
     def ignore(self, user_id):
         if not "user" in session:
             return redirect('/login')
         self.models['MyFace'].ignore(user_id)
-        return redirect('/dashboard')
+        requestFrom = request.url_rule
+        if request.form['page'] == "profile":
+            tempRoute = '/profile/' + user_id
+            return redirect(tempRoute)
+        else:
+            return redirect('/dashboard')
 
     def cancelRequest(self, user_id):
         if not "user" in session:
             return redirect('/login')
         self.models['MyFace'].cancelRequest(user_id)
-        return redirect('/dashboard')
+        requestFrom = request.url_rule
+        if request.form['page'] == "profile":
+            tempRoute = '/profile/' + user_id
+            return redirect(tempRoute)
+        else:
+            return redirect('/dashboard')
+
 
     def acceptFriend(self, user_id):
         if not "user" in session:
@@ -257,7 +281,12 @@ class MyFaces(Controller):
         friends = self.models['MyFace'].selectFriends(user_id)
         self.models['MyFace'].numFriends(len(friends), user_id)
         flash( user[0]['first_name'] + " " + user[0]['last_name'] + " has been friended!", "success")
-        return redirect('/dashboard')
+        requestFrom = request.url_rule
+        if request.form['page'] == "profile":
+            tempRoute = '/profile/' + user_id
+            return redirect(tempRoute)
+        else:
+            return redirect('/dashboard')
 
     def unfriend(self, user_id):
         if not "user" in session:
@@ -267,7 +296,12 @@ class MyFaces(Controller):
         friends = self.models['MyFace'].selectFriends(user_id)
         self.models['MyFace'].numFriends(len(friends), user_id)
         flash( user[0]['first_name'] + " " + user[0]['last_name'] + " has been unfriended!!!", "success")
-        return redirect('/dashboard')
+        requestFrom = request.url_rule
+        if request.form['page'] == "profile":
+            tempRoute = '/profile/' + user_id
+            return redirect(tempRoute)
+        else:
+            return redirect('/dashboard')
 
     def search(self):
         if not "user" in session:

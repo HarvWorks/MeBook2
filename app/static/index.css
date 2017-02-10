@@ -286,5 +286,10 @@ border-color: #4d90fe;
 
 .col-xs-10 a{
     text-decoration: none;
-    color: #0f49a8;
+    color: #595959;
+}
+
+.inline{
+    display: inline;
+    margin-bottom: 0;
 }

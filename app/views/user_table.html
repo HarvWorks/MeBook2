@@ -77,13 +77,13 @@
                                     <a href="/profile/{{friend['id']}}">Profile Page</a>
                                 </td>
                                 <td>
-                                    <form id="acceptfriend" action="/acceptfriend/{{friend['id']}}" method="post">
+                                    <form class="inline" id="acceptfriend{{friend['id']}}" action="/acceptfriend/{{friend['id']}}" method="post">
                                         <input type="hidden" name="page" value="user_table">
-                                        <a href="#" onclick="document.getElementById('acceptfriend').submit();">UnFriend!</a>
+                                        <a href="#" onclick="document.getElementById('acceptfriend{{friend['id']}}').submit();">Accept</a>
                                     </form> or
-                                    <form id="ignore" action="/ignore/{{friend['id']}}" method="post">
+                                    <form class="inline" id="ignore{{friend['id']}}" action="/ignore/{{friend['id']}}" method="post">
                                         <input type="hidden" name="page" value="user_table">
-                                        <a href="#" onclick="document.getElementById('ignore').submit();">UnFriend!</a>
+                                        <a href="#" onclick="document.getElementById('ignore{{friend['id']}}').submit();">Ignore!</a>
                                     </form>
                                 </td>
                                 <td>
@@ -106,9 +106,9 @@
                                     <a href="/profile/{{friend['id']}}">Profile Page</a>
                                 </td>
                                 <td>
-                                    <form id="unfriend" action="/unfriend/{{friend['id']}}" method="post">
+                                    <form class="inline" id="unfriend{{friend['id']}}" action="/unfriend/{{friend['id']}}" method="post">
                                         <input type="hidden" name="page" value="user_table">
-                                        <a href="#" onclick="document.getElementById('unfriend').submit();">UnFriend!</a>
+                                        <a href="#" onclick="document.getElementById('unfriend{{friend['id']}}').submit();">UnFriend!</a>
                                     </form>
                                 </td>
                                 <td>
@@ -167,9 +167,9 @@
                                     <a href="/profile/{{user['id']}}">Profile Page</a>
                                 </td>
                                 <td>
-                                    <form id="requestfriend" action="/cancelrequest/{{user['id']}}" method="post">
+                                    <form class="inline" id="cancelrequest{{user['id']}}" action="/cancelrequest/{{user['id']}}" method="post">
                                         <input type="hidden" name="page" value="user_table">
-                                        <a href="#" onclick="document.getElementById('requestfriend').submit();">Cancel Request!</a>
+                                        <a href="#" onclick="document.getElementById('cancelrequest{{user['id']}}').submit();">Cancel Request!</a>
                                     </form>
                                 </td>
                             </tr>
@@ -192,9 +192,9 @@
                                     <a href="/profile/{{user['id']}}">Profile Page</a>
                                 </td>
                                 <td>
-                                    <form id="requestfriend" action="/requestfriend/{{user['id']}}" method="post">
+                                    <form class="inline" id="requestfriend{{user['id']}}" action="/requestfriend/{{user['id']}}" method="post">
                                         <input type="hidden" name="page" value="user_table">
-                                        <a href="#" onclick="document.getElementById('requestfriend').submit();">Request as Friend!</a>
+                                        <a href="#" onclick="document.getElementById('requestfriend{{user['id']}}').submit();">Request as Friend!</a>
                                     </form>
                                 </td>
                             </tr>

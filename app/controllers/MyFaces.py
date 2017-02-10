@@ -10,6 +10,7 @@ from werkzeug.datastructures import ImmutableMultiDict
 # sys.path.insert(0, '/UserDashboard')
 # from manage import socketio
 
+messageClients = {}
 
 class MyFaces(Controller):
     def __init__(self, action):
@@ -147,6 +148,8 @@ class MyFaces(Controller):
         if not "user" in session:
             return redirect('/login')
         user = self.models['MyFace'].findUser(session['user'])
+        session['first_name'] = user[0]['first_name']
+        session['last_name'] = user[0]['last_name']
         flash(user[0]['email'], "email")
         flash(user[0]['first_name'], "first_name")
         flash(user[0]['last_name'], "last_name")
@@ -159,9 +162,6 @@ class MyFaces(Controller):
         user = self.models['MyFace'].findUser(user_id)
         relationship = self.models['MyFace'].findRelationship(user_id)
         friendType = ""
-        print "------------------------------------------------------"
-        print relationship
-        print "------------------------------------------------------"
         if len(relationship) > 1:
             friendType = "friend"
         elif len(relationship) == 0:
@@ -195,16 +195,33 @@ class MyFaces(Controller):
         session['currentTimeStamp'] = messages[-1]
         return jsonify(messages = messages)
 
+    @socketio.on('connect')
+    def connected():
+        print "-------------------------------------------------------------------------------------"
+        print "%s connected" % (request.sid)
+        messageClients[session['user']] = request.sid
+        print messageClients
+        print "-------------------------------------------------------------------------------------"
+
+    @socketio.on('disconnect')
+    def disconnect():
+        print "-------------------------------------------------------------------------------------"
+        print "%s disconnected" % (request.sid)
+        del messageClients[session['user']]
+        print messageClients
+        print "-------------------------------------------------------------------------------------"
+
     @socketio.on('chat_message', namespace = '/chat')
     def chat_message_send(message):
         if not message['message'] == "":
             message['created_at'] = int(time.time())
-            emit('chat_message', message, broadcast=True)
+            if int(message['friendId']) in messageClients:
+                emit('chat_message', message, room = messageClients[int(message['friendId'])], namespace = '/chat')
+            if session['user'] in messageClients:
+                emit('chat_message', message, room = messageClients[session['user']], namespace = '/chat')
 
     @socketio.on('set_location', namespace = '/map')
     def chat_message_send(location):
-        print "sdfdsafjdskfjsdjkfjdsfdhsfkjdjskfjdsjklafhsdajfhadsl"
-        print location
         emit('set_location', location, broadcast=True, namespace = '/map')
 
     def userMessageSend(self, user_id):
@@ -240,10 +257,14 @@ class MyFaces(Controller):
     def requestFriend(self, user_id):
         if not "user" in session:
             return redirect('/login')
-        user = self.models['MyFace'].findUser(user_id)
-        self.models['MyFace'].addFriend(user_id)
-        requestFrom = request.url_rule
-        flash( "A friend request has been sent to " + user[0]['first_name'] + " " + user[0]['last_name'] + "!", "success")
+        if user_id != session['user']:
+            print "-------------------------------------------------------------------------------------"
+            print user_id
+            print "-------------------------------------------------------------------------------------"
+            user = self.models['MyFace'].findUser(user_id)
+            self.models['MyFace'].addFriend(user_id)
+            requestFrom = request.url_rule
+            flash( "A friend request has been sent to " + user[0]['first_name'] + " " + user[0]['last_name'] + "!", "success")
         if request.form['page'] == "profile":
             tempRoute = '/profile/' + user_id
             return redirect(tempRoute)

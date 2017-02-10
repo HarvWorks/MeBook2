@@ -145,15 +145,15 @@
                 $('#chatbox').html(messageStr);
             }, 'json');
             var chat = io.connect('http://localhost:5000/chat')
-            // var chat = io.connect()
             chat.on('chat_message', function(message){
-                console.log('Hella!');
-                var messageStr = messageFormatter(message);
-                $('#chatbox').append(messageStr);
-                $('body').tooltip({
-                    selector: '[data-toggle=tooltip]'
-                });
-                updateScroll()
+                if ({{user_id}} == message.id || {{session['user']}} == message.id){
+                    var messageStr = messageFormatter(message);
+                    $('#chatbox').append(messageStr);
+                    $('body').tooltip({
+                        selector: '[data-toggle=tooltip]'
+                    });
+                    updateScroll()
+                }
             });
         </script>
     </head>
@@ -246,7 +246,7 @@
                                     var key = e.which || e.keyCode;
                                     if (key === 13) { // 13 is enter
 
-                                        chat.emit('chat_message', {'message': document.getElementById('messageBox').value, 'id': '{{session['user']}}', 'first_name': '{{session['first_name']}}', 'last_name': '{{session['last_name']}}'});
+                                        chat.emit('chat_message', {'message': document.getElementById('messageBox').value, 'id': '{{session['user']}}', 'first_name': '{{session['first_name']}}', 'last_name': '{{session['last_name']}}', 'friendId': '{{user_id}}'});
                                         $.post('/message/{{user_id}}/send', $('#message').serialize(),
                                         function(data, status){
                                             if (status == "success"){
@@ -367,7 +367,6 @@
                       infowindow.setContent(content);
                       infowindow.open(map, marker);
                       document.getElementById("approve").addEventListener('click', function () {
-                          console.log("MOOOOOODSDFDSFDSF");
                       });
                   }
                   else {
@@ -375,7 +374,7 @@
                       infowindow.setContent(content);
                       infowindow.open(map, marker);
                       document.getElementById("set_location").addEventListener('click', function () {
-                          mapSocket.emit('set_location', {"location": latlng, "tutor":tutor});
+                          mapSocket.emit('set_location', {"location": latlng, 'id': '{{session['user']}}', 'first_name': '{{session['first_name']}}', 'last_name': '{{session['last_name']}}', 'friendId': '{{user_id}}'});
                       });
                   }
                 } else {

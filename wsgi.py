@@ -1,6 +1,16 @@
-from system.init import initialize_app
+from system.init import app
+from system import socketio
 import subprocess
-application = initialize_app()
+
+from system.init.configuration import initialize_config
+from system.init.database import initialize_db
+from system.init.routes import initialize_routes
+
+
+
+initialize_config(app)
+initialize_db(app)
+initialize_routes(app)
 
 if __name__ == "__main__":
-	application.run(host='127.0.0.1')
+	socketio.run(app)

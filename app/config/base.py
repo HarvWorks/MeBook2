@@ -5,7 +5,7 @@
 class Config(object):
     DEBUG = False
     TESTING = False
-    SECRET_KEY = 'J:<SADKjdfjHUI8*&3d'
+    SECRET_KEY = 'Moo'
 
 """ Put Development Specific Configurations here """
 class DevelopmentConfig(Config):
@@ -18,3 +18,6 @@ class StagingConfig(Config):
 """ Put Production Specific Configurations here """
 class ProductionConfig(Config):
     pass
+
+class ApiKey(object):
+   googleMaps = "Moo"

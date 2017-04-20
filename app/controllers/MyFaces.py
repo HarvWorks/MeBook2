@@ -1,4 +1,5 @@
 from system.core.controller import *
+from app.config.base import ApiKey
 import datetime
 from flask_socketio import SocketIO, join_room, leave_room, emit, send
 from system import socketio
@@ -11,6 +12,10 @@ from werkzeug.datastructures import ImmutableMultiDict
 # from manage import socketio
 
 messageClients = {}
+apiKey = ApiKey.googleMaps
+print "-------------------------------------------------------------------------------------"
+print apiKey
+print "-------------------------------------------------------------------------------------"
 
 class MyFaces(Controller):
     def __init__(self, action):
@@ -178,7 +183,7 @@ class MyFaces(Controller):
             return redirect('/login')
         users = self.models['MyFace'].usersOfMessage(session['user'])
         if not users:
-            return self.load_view('message.html')
+            return self.load_view('message.html', apiKey = apiKey)
         return redirect('/message/' + str(users[0]['id']))
 
     def userMessage(self, user_id):
@@ -186,7 +191,7 @@ class MyFaces(Controller):
             return redirect('/login')
         users = self.models['MyFace'].usersOfMessage(session['user'])
         user = self.models['MyFace'].findUser(user_id)
-        return self.load_view('message.html', users = users, user_id = user_id, user = user)
+        return self.load_view('message.html', users = users, user_id = user_id, user = user, apiKey = apiKey)
 
     def grabMessages(self, user_id):
         if not "user" in session:
@@ -199,7 +204,7 @@ class MyFaces(Controller):
     def connected():
         print "-------------------------------------------------------------------------------------"
         print "%s connected" % (request.sid)
-        messageClients[session['user']] = request.sid
+        messageClients[session.get('user')] = request.sid
         print messageClients
         print "-------------------------------------------------------------------------------------"
 
@@ -207,7 +212,7 @@ class MyFaces(Controller):
     def disconnect():
         print "-------------------------------------------------------------------------------------"
         print "%s disconnected" % (request.sid)
-        del messageClients[session['user']]
+        del messageClients[session.get('user')]
         print messageClients
         print "-------------------------------------------------------------------------------------"
 
@@ -217,12 +222,15 @@ class MyFaces(Controller):
             message['created_at'] = int(time.time())
             if int(message['friendId']) in messageClients:
                 emit('chat_message', message, room = messageClients[int(message['friendId'])], namespace = '/chat')
-            if session['user'] in messageClients:
-                emit('chat_message', message, room = messageClients[session['user']], namespace = '/chat')
+            if session.get('user') in messageClients:
+                emit('chat_message', message, room = messageClients[session.get('user')], namespace = '/chat')
 
     @socketio.on('set_location', namespace = '/map')
     def chat_message_send(location):
-        emit('set_location', location, broadcast=True, namespace = '/map')
+        if int(message['friendId']) in messageClients:
+            emit('set_location', location, room = messageClients[int(message['friendId'])], namespace = '/map')
+        if session.get('user') in messageClients:
+            emit('set_location', location, room = messageClients[session.get('user')], namespace = '/map')
 
     def userMessageSend(self, user_id):
         if not "user" in session:

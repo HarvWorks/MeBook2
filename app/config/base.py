@@ -20,4 +20,4 @@ class ProductionConfig(Config):
     pass
 
 class ApiKey(object):
-   googleMaps = "Moo"
+   googleMaps = "AIzaSyBIrpUX1SXPsRmzJSB8zSA9FYmDUh27WGk"
